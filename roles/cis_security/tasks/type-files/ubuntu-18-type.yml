@@ -119,52 +119,31 @@
       - "{{ unused_filesystems }}"
 
   # Create and configure the local-fs systemd service file
-  - name: 1.1.[2-5] - Ensure /tmp is configured
-    block:
-      # Create a file to hold the system specific local-fs service information
-      #  be sure to set the selinux security context. Even if selinux is disabled,
-      #  it's a good idea to make sure it is set on files
-      - name: Ensure the local-fs directory is created
-        ansible.builtin.file:
-          path: /etc/systemd/system/local-fs.target.wants
-          state: directory
-          owner: root
-          group: root
-          mode: 0755
-          setype: etc_t
+  # Add content to the file we created using the blockinfile command.
+  # Notify systemd to reload its daemons and start the local-fs service
+  - name: 1.1.[2-5] - Ensure /tmp is mounts on tmpfs with noexec,nodev,nosuid
+    ansible.builtin.blockinfile:
+      path: /etc/systemd/system/tmp.mount
+      block: |
+        [Unit]
+        Before=local-fs.target
 
-      # Add content to the file we created using the blockinfile command.
-      # Notify systemd to reload its daemons and start the local-fs service
-      - name: 1.1.[2-5] - Configure config file for tmpfs
-        ansible.builtin.blockinfile:
-          path: /etc/systemd/system/local-fs.target.wants/tmp.mount
-          block: |
-            [Mount]
-            What=tmpfs
-            Where=/tmp
-            Type=tmpfs
-            Options=mode=1777,strictatime,noexec,nodev,nosuid
-          create: true
+        [Mount]
+        What=tmpfs
+        Where=/tmp
+        Type=tmpfs
+        Options=mode=1777,strictatime,noexec,nodev,nosuid
+        # CIS
+        # 1.1.2 separate tmp partition
+        # 1.1.3 nodev on tmp
+        # 1.1.4 nosuid on tmp
+        # 1.1.5 noexec on tmp
 
-      - name: Ensure the local-fs directory is created
-        file:
-          path: /etc/systemd/system/local-fs.target.wants
-          state: directory
-          owner: root
-          group: root
-          mode: 0755
-          setype: etc_t
-
-      # symbolic link is required for .wants/ folder
-      - name: Create a symbolic link
-        ansible.builtin.file:
-          src: /etc/systemd/system/tmp.mount
-          dest: /etc/systemd/system/local-fs.target.wants/tmp.mount
-          owner: root
-          group: root
-          state: link
-        notify: restart tmpfs
-
+        [Install]
+        WantedBy=local-fs.target
+      create: true
+    notify: restart tmpfs
+    # The notify will call systemctl daemon-reload and remount the fs
     tags:
       - 1.1.2
       - 1.1.3

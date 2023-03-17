@@ -9,7 +9,7 @@ security benchmarks for operating systems designed to decrease the vulnerability
 
 These benchmarks are published in PDFs for non-commercial use. This role is an implementation of
 those controls for various Operating Systems per the list below. The controls themselves are not published here and
-you should visit CIS for a copy of the PDF. These automations are provided as a resposne and a tool to
+you should visit CIS for a copy of the PDF. These automations are provided as a response and a tool to
 help systems administrators secure machines based off those recommendations. This collection is not
 endorsed by the Center for Internet Security in any way.
 
@@ -45,9 +45,9 @@ Control machine:
 - Machine connected to a package repository source (Satellite or yum repo)
 
 Target machine:
-- SSH connection with prviiledge escalation on Linux machines.
+- SSH connection with privilege escalation on Linux machines.
   - Python interpreter
-- WinRM connection with user with admin priviledge for Windows. Alternatively you can use an SSH connection.
+- WinRM connection with user with admin privilege for Windows. Alternatively you can use an SSH connection.
   - PowerShell v3 or higher
 
 Some of the Ansible modules that are used require Ansible 2.7 and newer.

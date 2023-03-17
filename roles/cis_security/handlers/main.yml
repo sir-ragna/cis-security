@@ -63,9 +63,9 @@
   ansible.builtin.systemd:
     name: tmp.mount
     state: restarted
-    enabled: True
-    masked: False
-    daemon_reload: True
+    enabled: true
+    masked: false
+    daemon_reload: true
 
 # Call the grub config file rebuilding program
 # There is no grub module, so we have to do it with shell
@@ -83,16 +83,16 @@
 - name: restart aidecheck
   ansible.builtin.systemd:
     name: aidecheck
-    enabled: True
+    enabled: true
     state: restarted
 
 - name: flush network routes
   ansible.builtin.sysctl:
     name: "{{ item }}"
     value: "1"
-    reload: True
+    reload: true
     state: present
-    sysctl_set: True
+    sysctl_set: true
   loop:
     - net.ipv4.route.flush
     - net.ipv6.route.flush
@@ -100,7 +100,7 @@
 - name: restart timesyncd
   ansible.builtin.systemd:
     name: systemd.timesyncd
-    enabled: True
+    enabled: true
     state: restarted
 
 - name: restart ufw

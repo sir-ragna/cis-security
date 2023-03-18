@@ -36,10 +36,9 @@
   # Update the system with security packages using the system's package manager
   #  Only update the system if the 'update_system' variable is set to true
   - name: 1.9.0 - Ensure updated system
-    ansible.builtin.package:
+    ansible.builtin.apt:
       name: "*"
       state: latest
-      security: true
     when: update_system
     tags:
       - 1.9.0
@@ -969,7 +968,7 @@
         enabled: false
         masked: true
         state: stopped
-      when: default_runlevel_out.stat.lnk_target is search("graphical.target") and not graphical_interface
+      when: default_runlevel_out.stat.lnk_target is defined and default_runlevel_out.stat.lnk_target is search("graphical.target") and not graphical_interface
       tags:
         - 2.2.2
 
@@ -979,7 +978,7 @@
       ansible.builtin.command: /bin/systemctl isolate multi-user.target
       register: isolate_out
       changed_when: isolate_out.changed
-      when: default_runlevel_out.stat.lnk_target is search("graphical.target") and not graphical_interface
+      when: default_runlevel_out.stat.lnk_target is defined and default_runlevel_out.stat.lnk_target is search("graphical.target") and not graphical_interface
       tags:
         - 2.2.2
 
@@ -987,7 +986,7 @@
       ansible.builtin.command: /bin/systemctl isolate graphical.target
       register: isolate_out
       changed_when: isolate_out.changed
-      when: default_runlevel_out.stat.lnk_target is search("multi-user.target") and not graphical_interface
+      when: default_runlevel_out.stat.lnk_target is defined and default_runlevel_out.stat.lnk_target is search("multi-user.target") and not graphical_interface
       tags:
         - 2.2.2
 
